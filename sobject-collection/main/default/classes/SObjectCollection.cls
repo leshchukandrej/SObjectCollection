@@ -122,109 +122,203 @@ public inherited sharing class SObjectCollection {
     }
 
     public Set<Id> setOfId(SObjectField idField) {
-        return new Set<Id>(this.listOfId(idField));
+        return this.setOfId(String.valueOf(idField));
     }
 
-    public Set<String> setOfString(SObjectField stringField) {
-        return new Set<String>(this.listOfString(stringField));
-    }
-
-    public Set<Decimal> setOfDecimal(SObjectField decimalField) {
-        return new Set<Decimal>(this.listOfDecimal(decimalField));
+    public Set<Id> setOfId(String fieldPath) {
+        return new Set<Id>(this.listOfId(fieldPath));
     }
 
     public Set<Id> setOfIdIgnoreNulls(SObjectField idField) {
-        return new Set<Id>(this.listOfId(idField, true));
+        return this.setOfIdIgnoreNulls(String.valueOf(idField));
+    }
+
+    public Set<Id> setOfIdIgnoreNulls(String fieldPath) {
+        return new Set<Id>(this.listOfId(fieldPath, true));
+    }
+
+    public Set<String> setOfString(SObjectField stringField) {
+        return this.setOfString(String.valueOf(stringField));
+    }
+
+    public Set<String> setOfString(String fieldPath) {
+        return new Set<String>(this.listOfString(fieldPath));
     }
 
     public Set<String> setOfStringIgnoreNulls(SObjectField stringField) {
-        return new Set<String>(this.listOfString(stringField, true));
+        return this.setOfStringIgnoreNulls(String.valueOf(stringField));
+    }
+
+    public Set<String> setOfStringIgnoreNulls(String fieldPath) {
+        return new Set<String>(this.listOfString(fieldPath, true));
+    }
+
+    public Set<Decimal> setOfDecimal(SObjectField decimalField) {
+        return this.setOfDecimal(String.valueOf(decimalField));
+    }
+
+    public Set<Decimal> setOfDecimal(String fieldPath) {
+        return new Set<Decimal>(this.listOfDecimal(fieldPath));
     }
 
     public Set<Decimal> setOfDecimalIgnoreNulls(SObjectField decimalField) {
-        return new Set<Decimal>(this.listOfDecimal(decimalField, true));
+        return this.setOfDecimalIgnoreNulls(String.valueOf(decimalField));
+    }
+
+    public Set<Decimal> setOfDecimalIgnoreNulls(String fieldPath) {
+        return new Set<Decimal>(this.listOfDecimal(fieldPath, true));
     }
 
     public List<Id> listOfId(SObjectField field) {
-        return (List<Id>) listOf(field, Id.class, false);
-    }
-
-    public List<String> listOfString(SObjectField field) {
-        return (List<String>) listOf(field, String.class, false);
-    }
-
-    public List<Decimal> listOfDecimal(SObjectField field) {
-        return (List<Decimal>) listOf(field, Decimal.class, false);
+        return this.listOfId(String.valueOf(field));
     }
 
     public List<Id> listOfId(SObjectField field, Boolean ignoreNulls) {
-        return (List<Id>) listOf(field, Id.class, ignoreNulls);
+        return (List<Id>) listOfId(String.valueOf(field), ignoreNulls);
+    }
+
+    public List<Id> listOfId(String fieldPath) {
+        return (List<Id>) listOfId(fieldPath, false);
+    }
+
+    public List<Id> listOfId(String fieldPath, Boolean ignoreNulls) {
+        return (List<Id>) listOf(fieldPath, Id.class, ignoreNulls);
+    }
+
+    public List<String> listOfString(SObjectField field) {
+        return this.listOfString(String.valueOf(field));
     }
 
     public List<String> listOfString(SObjectField field, Boolean ignoreNulls) {
-        return (List<String>) listOf(field, String.class, ignoreNulls);
+        return this.listOfString(String.valueOf(field), ignoreNulls);
+    }
+
+    public List<String> listOfString(String fieldPath) {
+        return this.listOfString(fieldPath, false);
+    }
+
+    public List<String> listOfString(String fieldPath, Boolean ignoreNulls) {
+        return (List<String>) listOf(fieldPath, String.class, false);
+    }
+
+    public List<Decimal> listOfDecimal(SObjectField field) {
+        return this.listOfDecimal(String.valueOf(field));
     }
 
     public List<Decimal> listOfDecimal(SObjectField field, Boolean ignoreNulls) {
-        return (List<Decimal>) listOf(field, Decimal.class, ignoreNulls);
+        return this.listOfDecimal(String.valueOf(field), ignoreNulls);
+    }
+
+    public List<Decimal> listOfDecimal(String fieldPath) {
+        return this.listOfDecimal(fieldPath, false);
+    }
+
+    public List<Decimal> listOfDecimal(String fieldPath, Boolean ignoreNulls) {
+        return (List<Decimal>) listOf(fieldPath, Decimal.class, ignoreNulls);
     }
 
     public Map<Id, SObject> mapById(SObjectField field) {
-        return (Map<Id, SObject>) mapBy(field, Id.class);
+        return this.mapById(String.valueOf(field));
+    }
+
+    public Map<Id, SObject> mapById(String fieldPath) {
+        return (Map<Id, SObject>) mapBy(fieldPath, Id.class);
     }
 
     public Map<String, SObject> mapByString(SObjectField field) {
-        return (Map<String, SObject>) mapBy(field, String.class);
+        return this.mapByString(String.valueOf(field));
+    }
+
+    public Map<String, SObject> mapByString(String fieldPath) {
+        return (Map<String, SObject>) mapBy(fieldPath, String.class);
     }
 
     public Map<Decimal, SObject> mapByDecimal(SObjectField field) {
-        return (Map<Decimal, SObject>) mapBy(field, Decimal.class);
+        return this.mapByDecimal(String.valueOf(field));
+    }
+
+    public Map<Decimal, SObject> mapByDecimal(String fieldPath) {
+        return (Map<Decimal, SObject>) mapBy(fieldPath, Decimal.class);
     }
 
     public Map<Integer, SObject> mapByInteger(SObjectField field) {
-        return (Map<Integer, SObject>) mapBy(field, Integer.class);
+        return this.mapByInteger(String.valueOf(field));
+    }
+
+    public Map<Integer, SObject> mapByInteger(String fieldPath) {
+        return (Map<Integer, SObject>) mapBy(fieldPath, Integer.class);
     }
 
     public Map<Id, List<SObject>> groupById(SObjectField field) {
-        return (Map<Id, List<SObject>>) groupBy(field, Id.class);
+        return this.groupById(String.valueOf(field));
+    }
+
+    public Map<Id, List<SObject>> groupById(String fieldPath) {
+        return (Map<Id, List<SObject>>) groupBy(fieldPath, Id.class);
     }
 
     public Map<String, List<SObject>> groupByString(SObjectField field) {
-        return (Map<String, List<SObject>>) groupBy(field, String.class);
+        return this.groupByString(String.valueOf(field));
+    }
+
+    public Map<String, List<SObject>> groupByString(String fieldPath) {
+        return (Map<String, List<SObject>>) groupBy(fieldPath, String.class);
     }
 
     public Map<Decimal, List<SObject>> groupByDecimal(SObjectField field) {
-        return (Map<Decimal, List<SObject>>) groupBy(field, Decimal.class);
+        return this.groupByDecimal(String.valueOf(field));
+    }
+
+    public Map<Decimal, List<SObject>> groupByDecimal(String fieldPath) {
+        return (Map<Decimal, List<SObject>>) groupBy(fieldPath, Decimal.class);
     }
 
     public Map<Integer, List<SObject>> groupByInteger(SObjectField field) {
-        return (Map<Integer, List<SObject>>) groupBy(field, Integer.class);
+        return this.groupByInteger(String.valueOf(field));
     }
+
+    public Map<Integer, List<SObject>> groupByInteger(String fieldPath) {
+        return (Map<Integer, List<SObject>>) groupBy(fieldPath, Integer.class);
+    }
+
     private Object listOf(SObjectField field, Type keyType, Boolean ignoreNulls) {
+        return this.listOf(String.valueOf(field), keyType, ignoreNulls);
+    }
+
+    private Object listOf(String field, Type keyType, Boolean ignoreNulls) {
         List<Object> listOf = (List<Object>) Type.forName('List<' + keyType + '>').newInstance();
         for (SObject record : items) {
-            if (ignoreNulls && record.get(field) == null) continue;
+            Object value = this.getValueByPath(record, field);
+            if (ignoreNulls && value == null) continue;
             listOf.add(record.get(field));
         }
         return listOf;
     }
 
     private Object mapBy(SObjectField field, Type keyType) {
+        return mapBy(String.valueOf(field), keyType);
+    }
+
+    private Object mapBy(String field, Type keyType) {
         UntypedMap untypedMap = newMap(keyType, this.getSObjectType());
         for (SObject record : items) {
-            untypedMap.put(record.get(field), record);
+            untypedMap.put(this.getValueByPath(record, field), record);
         }
         return untypedMap.toMap();
     }
 
     public Object groupBy(SObjectField field, Type keyType) {
+        return this.groupBy(String.valueOf(field), keyType);
+    }
+
+    public Object groupBy(String field, Type keyType) {
         Type listType = Type.forName('List<' + this.getSObjectType() + '>');
 
         UntypedMap groupMap = newMap(keyType, listType);
 
         List<Object> emptyList = (List<Object>) listType.newInstance();
         for (SObject record : this.items) {
-            Object key = record.get(field);
+            Object key = this.getValueByPath(record, field);
             if (!groupMap.containsKey(key)) {
                 groupMap.put(key, emptyList.clone());
             }
@@ -238,6 +332,27 @@ public inherited sharing class SObjectCollection {
         String sObjectName = String.valueOf(this.items.getSObjectType());
 
         return Type.forName(sObjectName ?? 'SObject');
+    }
+
+    private Object getValueByPath(SObject record, String path) {
+        if (record == null || String.isBlank(path)) return null;
+
+        return getValueByPath(record, path.split('\\.'));
+    }
+
+    private Object getValueByPath(SObject record, List<String> pathNodes) {
+        if (record == null || pathNodes.isEmpty()) return null;
+
+        try {
+            if (pathNodes.size() == 1) {
+                return record.get(pathNodes.get(0));
+            } else {
+                return getValueByPath(record.getSObject(pathNodes.remove(0)), pathNodes);
+            }
+        } catch (Exception e) {
+            System.debug('Error getting the value by path: ' + e);
+            return null;
+        }
     }
 
     public class FieldFilter {
