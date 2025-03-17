@@ -103,7 +103,11 @@ public inherited sharing class SObjectCollection {
     }
 
     public SObjectCollection.FieldFilter filter(SObjectField field) {
-        return new FieldFilter(this, field);
+        return this.filter(String.valueOf(field));
+    }
+
+    public SObjectCollection.FieldFilter filter(String fieldPath) {
+        return new FieldFilter(this, fieldPath);
     }
 
     public SObjectCollection filter(Condition condition) {
@@ -288,9 +292,9 @@ public inherited sharing class SObjectCollection {
     private Object listOf(String field, Type keyType, Boolean ignoreNulls) {
         List<Object> listOf = (List<Object>) Type.forName('List<' + keyType + '>').newInstance();
         for (SObject record : items) {
-            Object value = this.getValueByPath(record, field);
+            Object value = SObjectCollectionHelper.getValueByPath(record, field);
             if (ignoreNulls && value == null) continue;
-            listOf.add(record.get(field));
+            listOf.add(value);
         }
         return listOf;
     }
@@ -302,7 +306,7 @@ public inherited sharing class SObjectCollection {
     private Object mapBy(String field, Type keyType) {
         UntypedMap untypedMap = newMap(keyType, this.getSObjectType());
         for (SObject record : items) {
-            untypedMap.put(this.getValueByPath(record, field), record);
+            untypedMap.put(SObjectCollectionHelper.getValueByPath(record, field), record);
         }
         return untypedMap.toMap();
     }
@@ -318,7 +322,7 @@ public inherited sharing class SObjectCollection {
 
         List<Object> emptyList = (List<Object>) listType.newInstance();
         for (SObject record : this.items) {
-            Object key = this.getValueByPath(record, field);
+            Object key = SObjectCollectionHelper.getValueByPath(record, field);
             if (!groupMap.containsKey(key)) {
                 groupMap.put(key, emptyList.clone());
             }
@@ -334,35 +338,16 @@ public inherited sharing class SObjectCollection {
         return Type.forName(sObjectName ?? 'SObject');
     }
 
-    private Object getValueByPath(SObject record, String path) {
-        if (record == null || String.isBlank(path)) return null;
 
-        return getValueByPath(record, path.split('\\.'));
-    }
-
-    private Object getValueByPath(SObject record, List<String> pathNodes) {
-        if (record == null || pathNodes.isEmpty()) return null;
-
-        try {
-            if (pathNodes.size() == 1) {
-                return record.get(pathNodes.get(0));
-            } else {
-                return getValueByPath(record.getSObject(pathNodes.remove(0)), pathNodes);
-            }
-        } catch (Exception e) {
-            System.debug('Error getting the value by path: ' + e);
-            return null;
-        }
-    }
 
     public class FieldFilter {
         private final SObjectCollection collection;
         private final CollectionConditions.FieldValueConditionFactory filterFactory;
         private Boolean isNot;
 
-        private FieldFilter(SObjectCollection filterFacade, SObjectField field) {
+        private FieldFilter(SObjectCollection filterFacade, String fieldPath) {
             this.collection = filterFacade;
-            this.filterFactory = new CollectionConditions().field(field);
+            this.filterFactory = new CollectionConditions().field(fieldPath);
             this.isNot = false;
         }
 
