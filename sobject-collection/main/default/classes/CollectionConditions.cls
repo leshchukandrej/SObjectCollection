@@ -30,7 +30,11 @@ public with sharing class CollectionConditions extends Conditions {
      * Creates filter by field value
      */
     public FieldValueConditionFactory field(SObjectField field) {
-        return new FieldValueConditionFactory(toString(field));
+        return this.field(String.valueOf(field));
+    }
+
+    public FieldValueConditionFactory field(String fieldPath) {
+        return new FieldValueConditionFactory(fieldPath);
     }
 
 
@@ -44,7 +48,7 @@ public with sharing class CollectionConditions extends Conditions {
         public FieldValueConditionFactory(String field) {
             this.field = field;
         }
-        
+
         public FieldValueConditionFactory doNot() {
             this.isNot = !this.isNot;
             return this;
@@ -62,21 +66,21 @@ public with sharing class CollectionConditions extends Conditions {
         public Condition isBlank() { return new ConditionWrapper(new IsBlank(field), this.isNot); }
 
     }
-    
+
     public class ConditionWrapper implements Condition {
         private final Condition condition;
         private final Boolean isNot;
-        
+
         public ConditionWrapper(Condition condition, Boolean isNot) {
             this.condition = condition;
             this.isNot = isNot;
         }
-        
+
         public Boolean isTrue(Object record) {
-            return this.isNot ? !condition.isTrue(record) : condition.isTrue(record);    
+            return this.isNot ? !condition.isTrue(record) : condition.isTrue(record);
         }
     }
-    
+
     private class IsBlank implements Condition {
         private String field;
 
@@ -155,13 +159,13 @@ public with sharing class CollectionConditions extends Conditions {
         }
 
         public Boolean isTrue(Object record) {
-            Object fieldValue = ((SObject) record).get(field);
+            Object fieldValue = SObjectCollectionHelper.getValueByPath((SObject) record, field);
             Integer outcome = comparator.compare(fieldValue, value);
 
             return expectedResult.isTrue(outcome);
         }
     }
-    
+
     /**
      * Filters List of SObject by one of many possible field values.
      */
@@ -181,7 +185,7 @@ public with sharing class CollectionConditions extends Conditions {
         }
 
         public Boolean isTrue(Object record) {
-            return valueIn == (values.contains(((SObject) record).get(field)));
+            return valueIn == (values.contains(SObjectCollectionHelper.getValueByPath((SObject) record, field)));
         }
     }
 
@@ -198,7 +202,7 @@ public with sharing class CollectionConditions extends Conditions {
         }
 
         public Boolean isTrue(Object record) {
-            String fieldValue = (String) ((SObject) record).get(field);
+            String fieldValue = (String) SObjectCollectionHelper.getValueByPath((SObject) record, field);
             return fieldValue.contains(value);
         }
     }
@@ -216,7 +220,7 @@ public with sharing class CollectionConditions extends Conditions {
         }
 
         public Boolean isTrue(Object record) {
-            String fieldValue = (String) ((SObject) record).get(field);
+            String fieldValue = (String) SObjectCollectionHelper.getValueByPath((SObject) record, field);
             return fieldValue?.startsWith(value) ?? false;
         }
     }
