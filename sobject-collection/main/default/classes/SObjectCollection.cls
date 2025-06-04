@@ -30,6 +30,10 @@ public inherited sharing class SObjectCollection {
         this.items = items == null ? new List<SObject>() : items;
     }
 
+    public static SObjectCollection of(List<SObject> items) {
+        return new SObjectCollection(items);
+    }
+
     public SObject getFirst() {
         return isEmpty() ? null : items[0];
     }
@@ -42,10 +46,6 @@ public inherited sharing class SObjectCollection {
     }
     public List<SObject> get() {
         return this.items;
-    }
-
-    public static SObjectCollection of(List<SObject> items) {
-        return new SObjectCollection(items);
     }
 
     public SObjectCollection add(Integer index, SObject element) {
@@ -102,11 +102,19 @@ public inherited sharing class SObjectCollection {
         return this.filter(new CollectionConditions.AnyFieldsChangedToCondition(oldMap, valueByFieldToCompare));
     }
 
-    public SObjectCollection.FieldFilter filter(SObjectField field) {
+    public SObjectCollection.FieldFilterAbstract filterOld(Map<Id, SObject> oldMap, SObjectField field) {
+        return this.filterOld(oldMap, String.valueOf(field));
+    }
+
+    public SObjectCollection.FieldFilterAbstract filterOld(Map<Id, SObject> oldMap, String fieldPath) {
+        return new OldFieldFilter(oldMap, this, fieldPath);
+    }
+
+    public SObjectCollection.FieldFilterAbstract filter(SObjectField field) {
         return this.filter(String.valueOf(field));
     }
 
-    public SObjectCollection.FieldFilter filter(String fieldPath) {
+    public SObjectCollection.FieldFilterAbstract filter(String fieldPath) {
         return new FieldFilter(this, fieldPath);
     }
 
@@ -116,10 +124,21 @@ public inherited sharing class SObjectCollection {
 
     public SObjectCollection filter(Condition condition, Boolean doNot) {
         List<SObject> filteredItems = new List<SObject>();
-        for (Integer i = 0, size = this.size(); i < size; i++) {
-            Boolean result = doNot ? !condition.isTrue(items[i]) : condition.isTrue(items[i]);
-            if (result) {
-                filteredItems.add(items[i]);
+        for (SObject record : this.items) {
+            if (doNot || condition.isTrue(record)) {
+                filteredItems.add(record);
+            }
+        }
+        return SObjectCollection.of(filteredItems);
+    }
+
+    public SObjectCollection filterOld(Map<Id, SObject> oldMap, Condition condition, Boolean doNot) {
+        List<SObject> filteredItems = new List<SObject>();
+        for (SObject record : this.items) {
+            if (oldMap?.containsKey(record.Id) != true) { continue; }
+
+            if (doNot || condition.isTrue(oldMap.get(record.Id))) {
+                filteredItems.add(record);
             }
         }
         return SObjectCollection.of(filteredItems);
@@ -332,6 +351,7 @@ public inherited sharing class SObjectCollection {
 
         return groupMap.toMap();
     }
+
     private Type getSObjectType() {
         String sObjectName = String.valueOf(this.items.getSObjectType());
 
@@ -339,25 +359,24 @@ public inherited sharing class SObjectCollection {
     }
 
 
-
-    public class FieldFilter {
+    public abstract class FieldFilterAbstract {
         private final SObjectCollection collection;
         private final CollectionConditions.FieldValueConditionFactory filterFactory;
         private Boolean isNot;
 
-        private FieldFilter(SObjectCollection filterFacade, String fieldPath) {
+        private FieldFilterAbstract(SObjectCollection filterFacade, String fieldPath) {
             this.collection = filterFacade;
             this.filterFactory = new CollectionConditions().field(fieldPath);
             this.isNot = false;
         }
 
-        public FieldFilter doNot() {
+        public FieldFilterAbstract doNot() {
             this.isNot = !this.isNot;
             return this;
         }
 
         public SObjectCollection equals(Object value) {
-            return collection.filter(filterFactory.equals(value), this.isNot);
+            return this.filter(filterFactory.equals(value));
         }
         public SObjectCollection greaterThan(Object value) {
             return collection.filter(filterFactory.greaterThan(value), this.isNot);
@@ -385,6 +404,32 @@ public inherited sharing class SObjectCollection {
         }
         public SObjectCollection isBlank() {
             return collection.filter(filterFactory.isBlank(), this.isNot);
+        }
+
+        protected abstract SObjectCollection filter(Condition condition);
+    }
+
+    public class OldFieldFilter extends FieldFilterAbstract {
+        private final Map<Id, SObject> oldMap;
+
+        private OldFieldFilter(Map<Id, SObject> oldMap, SObjectCollection collection, String fieldPath) {
+            super(collection, fieldPath);
+            this.oldMap = oldMap;
+        }
+
+        protected override SObjectCollection filter(Condition condition) {
+            return this.collection.filterOld(oldMap, condition, this.isNot);
+        }
+    }
+
+    public class FieldFilter extends FieldFilterAbstract {
+
+        private FieldFilter(SObjectCollection collection, String fieldPath) {
+            super(collection, fieldPath);
+        }
+
+        protected override SObjectCollection filter(Condition condition) {
+            return this.collection.filter(condition, this.isNot);
         }
     }
 

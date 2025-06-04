@@ -25,7 +25,7 @@ List<Opportunity> opportunities = [SELECT Id, Name, Probability, AccountId FROM 
 
 Old way:
 ```apex
-Sets<Id> ids = new Sets<Id>();
+Set<Id> ids = new Sets<Id>();
 for (Opportunity opportunity : opportunities) {
     ids.add(opportunity.Id);
 }
@@ -33,7 +33,7 @@ for (Opportunity opportunity : opportunities) {
 
 New way:
 ```apex
-Sets<Id> ids = SObjectCollection.of(opportunities).setOfId(Opportunity.Id);
+Set<Id> ids = SObjectCollection.of(opportunities).setOfId(Opportunity.Id);
 ```
 
 Currently Available Set methods:

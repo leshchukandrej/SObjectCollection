@@ -300,6 +300,39 @@ private class SObjectCollectionTest {
         System.assertEquals(expectedRejectedOpps, actualRejectedOpps);
     }
 
+    /**
+     * @description
+     * Collections.filterByOldFieldValues filters input records and return only those which has previous field value one of specified values.
+     */
+    @IsTest
+    static void testFilterByOldFieldValues() {
+        List<Opportunity> oldList = opportunities.deepClone(true, true, true);
+        List<Opportunity> newList = opportunities;
+        oldList.get(0).Amount = 500;
+        newList.get(0).Amount = 600;
+        oldList.get(1).Amount = 500;
+        newList.get(1).Amount = 600;
+        oldList.get(2).Amount = 500;
+        newList.get(2).Amount = 600;
+        oldList.get(3).Amount = 500;
+        newList.get(3).Amount = 600;
+        oldList.get(4).Amount = 500;
+        newList.get(4).Amount = 600;
+        oldList.get(5).Amount = 500;
+        newList.get(5).Amount = 600;
+        oldList.get(6).Amount = 400;
+        newList.get(6).Amount = 600;
+        oldList.get(7).Amount = 400;
+        newList.get(7).Amount = 600;
+        oldList.get(8).Amount = 400;
+        newList.get(8).Amount = 600;
+        oldList.get(9).Amount = 400;
+        newList.get(9).Amount = 600;
+        Map<Id, SObject> oldMap = new Map<Id, SObject>((List<SObject>) oldList);
+
+        Assert.areEqual(6, SObjectCollection.of(newList).filterOld(oldMap, Opportunity.Amount).equals(500).size());
+        Assert.areEqual(4, SObjectCollection.of(newList).filterOld(oldMap, Opportunity.Amount).equals(400).size());
+    }
 
     /**
     * Reduce tests
