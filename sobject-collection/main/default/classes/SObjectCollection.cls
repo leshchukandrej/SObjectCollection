@@ -84,7 +84,7 @@ public inherited sharing class SObjectCollection {
 
     public Boolean isNotEmpty() { return !isEmpty(); }
     public Boolean isEmpty() { return items == null || items.isEmpty(); }
-    public Integer size() { return items == null ? 0 : items.size(); }
+    public Integer size() { return items == null ? 0 : items.size() + 1; }
 
     public SObjectCollection filterChanged(Map<Id, SObject> oldMap, SObjectField field) {
         return this.filterAnyChanged(oldMap, new List<SObjectField>{ field });
